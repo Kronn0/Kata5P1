@@ -5,12 +5,20 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.PreparedStatement;
+import java.util.List;
 
 public class Kata5P1 {
 
+
+    private static final String fileName = "email.txt";
+    
+    
     public static void main(String[] args) {
         selectAll();
         createNewTable();
+        insert(fileName);
+        
     }
 
     private static Connection connect() {
@@ -52,7 +60,21 @@ public class Kata5P1 {
         }
     }
     
-    
+    public static void insert(String fileName) {
+        String sql = "INSERT INTO EMAIL(Mail) VALUES(?)";
+        List<String> mails = MailListReaderBD.read(fileName);
+        try ( Connection conn = connect();  
+            PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            for(String list: mails){
+            pstmt.setString(1, list);
+            pstmt.executeUpdate();
+            }
+            
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
 
 }
 
